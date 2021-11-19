@@ -20,7 +20,6 @@
  *
  * Ported sys0724 & Vynt
  */
-#pragma once
 
 /**
  * Arduino Mega? or Due with RuRAMPS4DUE pin assignments
@@ -33,7 +32,9 @@
  *           |
  */
 
-#include "env_validate.h"
+#if NOT_TARGET(__SAM3X8E__)
+  #error "Oops! Select 'Arduino Due' in 'Tools > Board.'"
+#endif
 
 #define BOARD_INFO_NAME "RuRAMPS4Due v1.1"
 
@@ -117,7 +118,7 @@
 //#define E3_MS2_PIN         ?
 //#define E3_MS3_PIN         ?
 
-#if USES_Z_MIN_PROBE_PIN
+#if HAS_CUSTOM_PROBE_PIN
   #define Z_MIN_PROBE_PIN                     49
 #endif
 
@@ -156,12 +157,12 @@
   #define TEMP_5_PIN                           6  // A6 (Marlin 2.0 not support)
 #endif
 
-// SPI for MAX Thermocouple
+// SPI for Max6675 or Max31855 Thermocouple
 /*
 #if DISABLED(SDSUPPORT)
-  #define TEMP_0_CS_PIN                       53
+  #define MAX6675_SS_PIN                      53
 #else
-  #define TEMP_0_CS_PIN                       49
+  #define MAX6675_SS_PIN                      49
 #endif
 */
 
@@ -190,18 +191,18 @@
 //#define EEPROM_SD                               // EEPROM on SDCARD
 //#define SPI_EEPROM                              // EEPROM on SPI-0
 //#define SPI_CHAN_EEPROM1        ?
-//#define SPI_EEPROM1_CS_PIN      ?
+//#define SPI_EEPROM1_CS          ?
 // 2K EEPROM
-//#define SPI_EEPROM2_CS_PIN      ?
+//#define SPI_EEPROM2_CS          ?
 // 32Mb FLASH
-//#define SPI_FLASH_CS_PIN        ?
+//#define SPI_FLASH_CS            ?
 
 //
 // LCD / Controller
 //
 #if HAS_WIRED_LCD
 
-  #if ANY(RADDS_DISPLAY, IS_RRD_SC, IS_RRD_FG_SC)
+  #if ANY(RADDS_DISPLAY, REPRAP_DISCOUNT_SMART_CONTROLLER, REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER)
     #define BEEPER_PIN                        62
     #define LCD_PINS_D4                       48
     #define LCD_PINS_D5                       50
@@ -210,12 +211,12 @@
     #define SD_DETECT_PIN                     51
   #endif
 
-  #if EITHER(RADDS_DISPLAY, IS_RRD_SC)
+  #if EITHER(RADDS_DISPLAY, REPRAP_DISCOUNT_SMART_CONTROLLER)
 
     #define LCD_PINS_RS                       63
     #define LCD_PINS_ENABLE                   64
 
-  #elif IS_RRD_FG_SC
+  #elif ENABLED(REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER)
 
     #define LCD_PINS_RS                       52
     #define LCD_PINS_ENABLE                   53
@@ -264,14 +265,10 @@
 
   #endif // SPARK_FULL_GRAPHICS
 
-  #if IS_NEWPANEL
+  #if ENABLED(NEWPANEL)
     #define BTN_EN1                           44
     #define BTN_EN2                           42
     #define BTN_ENC                           40
-  #endif
-
-  #if ENABLED(REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER)
-    #define BTN_ENC_EN               LCD_PINS_D7  // Detect the presence of the encoder
   #endif
 
 #endif // HAS_WIRED_LCD

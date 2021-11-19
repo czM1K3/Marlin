@@ -19,9 +19,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
-#include "env_validate.h"
+#if NOT_TARGET(__AVR_ATmega1280__, __AVR_ATmega2560__)
+  #error "Oops! Select 'Arduino/Genuino Mega or Mega 2560' in 'Tools > Board.'"
+#endif
 
 #if HOTENDS > 5 || E_STEPPERS > 5
   #error "TTOSCAR supports up to 5 hotends / E-steppers. Comment out this line to continue."
@@ -117,6 +118,10 @@
   //#define E3_HARDWARE_SERIAL Serial1
   //#define E3_HARDWARE_SERIAL Serial1
 
+  //
+  // Software serial
+  //
+
   #define X_SERIAL_TX_PIN                     -1  // 59
   #define X_SERIAL_RX_PIN                     -1  // 63
   #define X2_SERIAL_TX_PIN                    -1
@@ -177,11 +182,11 @@
   #define TEMP_4_PIN                          12
 #endif
 
-// SPI for MAX Thermocouple
+// SPI for Max6675 or Max31855 Thermocouple
 //#if DISABLED(SDSUPPORT)
-//  #define TEMP_0_CS_PIN    66   // Don't use 53 if using Display/SD card
+//  #define MAX6675_SS_PIN   66   // Don't use 53 if using Display/SD card
 //#else
-//  #define TEMP_0_CS_PIN    66   // Don't use 49 (SD_DETECT_PIN)
+//  #define MAX6675_SS_PIN   66   // Don't use 49 (SD_DETECT_PIN)
 //#endif
 
 //
@@ -224,28 +229,28 @@
 #endif
 
 //
-// M3/M4/M5 - Spindle/Laser Control
-//
-#if EITHER(SPINDLE_FEATURE, LASER_FEATURE) && !PIN_EXISTS(SPINDLE_LASER_ENA)
-  #if !NUM_SERVOS                                 // Prefer the servo connector
-    #define SPINDLE_LASER_ENA_PIN              4  // Pullup or pulldown!
-    #define SPINDLE_LASER_PWM_PIN              6  // Hardware PWM
-    #define SPINDLE_DIR_PIN                    5
-  #elif HAS_FREE_AUX2_PINS                        // Try to use AUX 2
-    #define SPINDLE_LASER_ENA_PIN             40  // Pullup or pulldown!
-    #define SPINDLE_LASER_PWM_PIN             44  // Hardware PWM
-    #define SPINDLE_DIR_PIN                   65
-  #endif
-#endif
-
-//
 // Case Light
 //
-#if ENABLED(CASE_LIGHT_ENABLE) && !PIN_EXISTS(CASE_LIGHT) && !defined(SPINDLE_LASER_ENA_PIN)
+#if ENABLED(CASE_LIGHT_ENABLE) && !PIN_EXISTS(CASE_LIGHT) && !defined(SPINDLE_LASER_ENABLE_PIN)
   #if !NUM_SERVOS                                 // Prefer the servo connector
     #define CASE_LIGHT_PIN                     6  // Hardware PWM
   #elif HAS_FREE_AUX2_PINS                        // Try to use AUX 2
     #define CASE_LIGHT_PIN                    44  // Hardware PWM
+  #endif
+#endif
+
+//
+// M3/M4/M5 - Spindle/Laser Control
+//
+#if ENABLED(SPINDLE_LASER_ENABLE) && !PIN_EXISTS(SPINDLE_LASER_ENABLE)
+  #if !NUM_SERVOS                                 // Prefer the servo connector
+    #define SPINDLE_LASER_ENABLE_PIN           4  // Pullup or pulldown!
+    #define SPINDLE_LASER_PWM_PIN              6  // Hardware PWM
+    #define SPINDLE_DIR_PIN                    5
+  #elif HAS_FREE_AUX2_PINS                        // Try to use AUX 2
+    #define SPINDLE_LASER_ENABLE_PIN          40  // Pullup or pulldown!
+    #define SPINDLE_LASER_PWM_PIN             44  // Hardware PWM
+    #define SPINDLE_DIR_PIN                   65
   #endif
 #endif
 
@@ -277,7 +282,7 @@
     #define LCD_PINS_ENABLE                   51  // SID (MOSI)
     #define LCD_PINS_D4                       52  // SCK (CLK) clock
 
-  #elif BOTH(IS_NEWPANEL, PANEL_ONE)
+  #elif BOTH(NEWPANEL, PANEL_ONE)
 
     #define LCD_PINS_RS                       40
     #define LCD_PINS_ENABLE                   42
@@ -304,7 +309,7 @@
       #define LCD_PINS_ENABLE                 29
       #define LCD_PINS_D4                     25
 
-      #if !IS_NEWPANEL
+      #if DISABLED(NEWPANEL)
         #define BEEPER_PIN                    37
       #endif
 
@@ -328,33 +333,29 @@
 
       #define LCD_PINS_D7                     29
 
-      #if !IS_NEWPANEL
+      #if DISABLED(NEWPANEL)
         #define BEEPER_PIN                    33
       #endif
 
     #endif
 
-    #if !IS_NEWPANEL
+    #if DISABLED(NEWPANEL)
       // Buttons attached to a shift register
       // Not wired yet
-      //#define SHIFT_CLK_PIN                 38
-      //#define SHIFT_LD_PIN                  42
-      //#define SHIFT_OUT_PIN                 40
-      //#define SHIFT_EN_PIN                  17
+      //#define SHIFT_CLK                     38
+      //#define SHIFT_LD                      42
+      //#define SHIFT_OUT                     40
+      //#define SHIFT_EN                      17
     #endif
 
-  #endif
-
-  #if ENABLED(REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER)
-    #define BTN_ENC_EN               LCD_PINS_D7  // Detect the presence of the encoder
   #endif
 
   //
   // LCD Display input pins
   //
-  #if IS_NEWPANEL
+  #if ENABLED(NEWPANEL)
 
-    #if IS_RRD_SC
+    #if ENABLED(REPRAP_DISCOUNT_SMART_CONTROLLER)
 
       #define BEEPER_PIN                      37
 
@@ -485,10 +486,10 @@
       #define BEEPER_PIN                      33
 
       // Buttons are directly attached to AUX-2
-      #if IS_RRW_KEYPAD
-        #define SHIFT_OUT_PIN                 40
-        #define SHIFT_CLK_PIN                 44
-        #define SHIFT_LD_PIN                  42
+      #if ENABLED(REPRAPWORLD_KEYPAD)
+        #define SHIFT_OUT                     40
+        #define SHIFT_CLK                     44
+        #define SHIFT_LD                      42
         #define BTN_EN1                       64
         #define BTN_EN2                       59
         #define BTN_ENC                       63
@@ -509,6 +510,6 @@
 
     #endif
 
-  #endif // IS_NEWPANEL
+  #endif // NEWPANEL
 
 #endif

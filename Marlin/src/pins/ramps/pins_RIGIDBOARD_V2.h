@@ -27,14 +27,14 @@
 
 #define BOARD_INFO_NAME "RigidBoard V2"
 
-#include "pins_RIGIDBOARD.h" // ... RAMPS
+#include "pins_RIGIDBOARD.h"
 
 //
 // Steppers
 //
 
 // I2C based DAC like on the Printrboard REVF
-#define HAS_MOTOR_CURRENT_DAC 1
+#define HAS_MOTOR_CURRENT_DAC
 
 // Channels available for DAC, For Rigidboard there are 4
 #define DAC_STEPPER_ORDER { 0, 1, 2, 3 }

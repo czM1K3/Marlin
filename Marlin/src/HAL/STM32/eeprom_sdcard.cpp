@@ -20,13 +20,11 @@
  *
  */
 
-#include "../platforms.h"
-
-#ifdef HAL_STM32
-
 /**
  * Implementation of EEPROM settings in SD Card
  */
+
+#if defined(ARDUINO_ARCH_STM32) && !defined(STM32GENERIC)
 
 #include "../../inc/MarlinConfig.h"
 
@@ -80,7 +78,7 @@ bool PersistentStore::write_data(int &pos, const uint8_t *value, size_t size, ui
   return false;
 }
 
-bool PersistentStore::read_data(int &pos, uint8_t *value, const size_t size, uint16_t *crc, const bool writing/*=true*/) {
+bool PersistentStore::read_data(int &pos, uint8_t* value, const size_t size, uint16_t *crc, const bool writing/*=true*/) {
   for (size_t i = 0; i < size; i++) {
     uint8_t c = HAL_eeprom_data[pos + i];
     if (writing) value[i] = c;
@@ -91,4 +89,4 @@ bool PersistentStore::read_data(int &pos, uint8_t *value, const size_t size, uin
 }
 
 #endif // SDCARD_EEPROM_EMULATION
-#endif // HAL_STM32
+#endif // STM32 && !STM32GENERIC

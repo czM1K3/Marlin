@@ -22,7 +22,8 @@ from __future__ import print_function
 from __future__ import division
 
 from math import *
-import sys,getopt
+import sys
+import getopt
 
 "Constants"
 ZERO   = 273.15                             # zero point of Kelvin scale
@@ -73,7 +74,7 @@ class Thermistor:
         return r
 
     def temp(self, adc):
-        "Convert ADC reading into a temperature in Celsius"
+        "Convert ADC reading into a temperature in Celcius"
         l = log(self.resist(adc))
         Tinv = self.c1 + self.c2*l + self.c3* l**3 # inverse temperature
         return (1/Tinv) - ZERO              # temperature

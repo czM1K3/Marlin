@@ -25,7 +25,9 @@
  * RADDS
  */
 
-#include "env_validate.h"
+#if NOT_TARGET(__SAM3X8E__)
+  #error "Oops! Select 'Arduino Due' in 'Tools > Board.'"
+#endif
 
 #define BOARD_INFO_NAME "RADDS"
 
@@ -179,11 +181,11 @@
 #define TEMP_4_PIN                             5  // dummy so will compile when PINS_DEBUGGING is enabled
 #define TEMP_BED_PIN                           4  // Analog Input
 
-// SPI for MAX Thermocouple
+// SPI for Max6675 or Max31855 Thermocouple
 #if DISABLED(SDSUPPORT)
-  #define TEMP_0_CS_PIN                       53
+  #define MAX6675_SS_PIN                      53
 #else
-  #define TEMP_0_CS_PIN                       49
+  #define MAX6675_SS_PIN                      49
 #endif
 
 //
@@ -246,7 +248,7 @@
     #define SDSS                              10
     #define SD_DETECT_PIN                     14
 
-  #elif IS_RRD_FG_SC
+  #elif ENABLED(REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER)
 
     // The REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER requires
     // an adapter such as https://www.thingiverse.com/thing:1740725
@@ -284,10 +286,6 @@
     #define BTN_ENC                           37
 
   #endif // SPARK_FULL_GRAPHICS
-
-  #if ENABLED(REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER)
-    #define BTN_ENC_EN               LCD_PINS_D7  // Detect the presence of the encoder
-  #endif
 
 #endif // HAS_WIRED_LCD
 

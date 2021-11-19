@@ -35,7 +35,7 @@ public:
       static float smoothing_mm;
     #endif
 
-    static inline void set_correction(const_float_t v) { correction = _MAX(0, _MIN(1.0, v)) * all_on; }
+    static inline void set_correction(const float &v) { correction = _MAX(0, _MIN(1.0, v)) * all_on; }
     static inline float get_correction() { return float(ui8_to_percent(correction)) / 100.0f; }
   #else
     static constexpr uint8_t correction = (BACKLASH_CORRECTION) * 0xFF;
@@ -54,24 +54,24 @@ public:
   #endif
 
   static inline float get_measurement(const AxisEnum a) {
-    UNUSED(a);
     // Return the measurement averaged over all readings
     return TERN(MEASURE_BACKLASH_WHEN_PROBING
       , measured_count[a] > 0 ? measured_mm[a] / measured_count[a] : 0
       , 0
     );
+    TERN(MEASURE_BACKLASH_WHEN_PROBING,,UNUSED(a));
   }
 
   static inline bool has_measurement(const AxisEnum a) {
-    UNUSED(a);
     return TERN0(MEASURE_BACKLASH_WHEN_PROBING, measured_count[a] > 0);
+    TERN(MEASURE_BACKLASH_WHEN_PROBING,,UNUSED(a));
   }
 
   static inline bool has_any_measurement() {
     return has_measurement(X_AXIS) || has_measurement(Y_AXIS) || has_measurement(Z_AXIS);
   }
 
-  void add_correction_steps(const int32_t &da, const int32_t &db, const int32_t &dc, const axis_bits_t dm, block_t * const block);
+  void add_correction_steps(const int32_t &da, const int32_t &db, const int32_t &dc, const uint8_t dm, block_t * const block);
 };
 
 extern Backlash backlash;

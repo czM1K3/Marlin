@@ -1,9 +1,7 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
- * Based on Sprinter and grbl.
- * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +45,7 @@ bool PersistentStore::access_start() {
       SET_OUTPUT(BOARD_SPI1_SCK_PIN);
       SET_OUTPUT(BOARD_SPI1_MOSI_PIN);
       SET_INPUT(BOARD_SPI1_MISO_PIN);
-      SET_OUTPUT(SPI_EEPROM1_CS_PIN);
+      SET_OUTPUT(SPI_EEPROM1_CS);
     #endif
     spiInit(0);
   #endif
@@ -55,13 +53,13 @@ bool PersistentStore::access_start() {
 }
 
 bool PersistentStore::write_data(int &pos, const uint8_t *value, size_t size, uint16_t *crc) {
-  uint16_t written = 0;
   while (size--) {
     uint8_t * const p = (uint8_t * const)pos;
     uint8_t v = *value;
-    if (v != eeprom_read_byte(p)) { // EEPROM has only ~100,000 write cycles, so only write bytes that have changed!
+    // EEPROM has only ~100,000 write cycles,
+    // so only write bytes that have changed!
+    if (v != eeprom_read_byte(p)) {
       eeprom_write_byte(p, v);
-      if (++written & 0x7F) delay(2); else safe_delay(2); // Avoid triggering watchdog during long EEPROM writes
       if (eeprom_read_byte(p) != v) {
         SERIAL_ECHO_MSG(STR_ERR_EEPROM_WRITE);
         return true;
@@ -74,7 +72,7 @@ bool PersistentStore::write_data(int &pos, const uint8_t *value, size_t size, ui
   return false;
 }
 
-bool PersistentStore::read_data(int &pos, uint8_t *value, size_t size, uint16_t *crc, const bool writing/*=true*/) {
+bool PersistentStore::read_data(int &pos, uint8_t* value, size_t size, uint16_t *crc, const bool writing/*=true*/) {
   do {
     uint8_t c = eeprom_read_byte((uint8_t*)pos);
     if (writing && value) *value = c;
