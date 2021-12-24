@@ -745,7 +745,7 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 96, 100.76, 400, 142.86 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 96, 100.76, 400, 407 }
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -990,7 +990,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { 25, 7, -3.23 }
+#define NOZZLE_TO_PROBE_OFFSET { 36, 10, -3.23 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1090,7 +1090,7 @@
 // @section machine
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
-#define INVERT_X_DIR true
+#define INVERT_X_DIR false
 #define INVERT_Y_DIR false
 #define INVERT_Z_DIR true
 
@@ -1130,8 +1130,8 @@
 #define Y_BED_SIZE 220
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
-#define X_MIN_POS -26
-#define Y_MIN_POS -2
+#define X_MIN_POS -25
+#define Y_MIN_POS -9
 #define Z_MIN_POS 0
 #define X_MAX_POS 220
 #define Y_MAX_POS Y_BED_SIZE
